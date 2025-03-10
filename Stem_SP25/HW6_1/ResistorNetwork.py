@@ -60,9 +60,9 @@ class ResistorNetwork():
         :param Txt: [string] the lines of the text file
         :return: a resistor object
         """
-        R = #JES Missing Code  # instantiate a new resistor object
+        R = Resistor()  # instantiate a new resistor object  #done
         N += 1  # <Resistor> was detected, so move to next line in Txt
-        txt = #JES Missing Code  # retrieve line from Txt and make it lower case using Txt[N].lower()
+        txt = Txt[N].lower()  # retrieve line from Txt and make it lower case using Txt[N].lower()  #done
         while "resistor" not in txt:
             if "name" in txt:
                 R.Name = txt.split('=')[1].strip()
@@ -125,7 +125,7 @@ class ResistorNetwork():
         :return:
         """
         # need to set the currents to that Kirchoff's laws are satisfied
-        i0 = #JES MISSING CODE  #define an initial guess for the currents in the circuit
+        i0 = [1.0, 1.0, 1.0]  #define an initial guess for the currents in the circuit     # done
         i = fsolve(self.GetKirchoffVals,i0)
         # print output to the screen
         print("I1 = {:0.1f}".format(i[0]))
@@ -213,10 +213,34 @@ class ResistorNetwork_2(ResistorNetwork):
     #region methods
     def AnalyzeCircuit(self):
         #JES Missing Code
+        i0 = [1.0, 1.0, 1.0, 1.0, 1.0]
+        i = fsolve(self.GetKirchoffVals,i0)
+        print("I1 = {:0.1f}".format(i[0]))
+        print("I2 = {:0.1f}".format(i[1]))
+        print("I3 = {:0.1f}".format(i[2]))
+        print("I4 = {:0.1f}".format(i[3]))
+        print("I5 = {:0.1f}".format(i[4]))
+        return i
         pass
 
     def GetKirchoffVals(self,i):
         #JES Missing Code
+        self.GetResistorByName('ad').Current=i[0]
+        self.GetResistorByName('bc').Current=i[0]
+        self.GetResistorByName('cd').Current=i[2]
+        self.GetResistorByName('ce').Current=i[1]
+        self.GetResistorByName('de').Current=i[3]
+        self.GetResistorByName('df').Current=i[4]
+
+        loops = self.GetLoopVoltageDrops()
+
+        eq1 = loops[0]
+        eq2 = loops[1]
+        eq3 = loops[2]
+        eq4 = i[0] + i[1] - i[2]
+        eq5 = i[2] - i[3] - i[4]
+        return [eq1, eq2, eq3, eq4, eq5]
+
         pass
     #endregion
 #endregion

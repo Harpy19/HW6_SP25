@@ -9,10 +9,10 @@ class Resistor():
         :param name: name of resistor by alphabetically ordered pair of node names
         """
         #region attributes
-        #JES Missing Code = R
-        #JES Missing Code = i
-        #JES Missing Code = self.DeltaV()
-        #JES Missing Code = name
+        self.Resistance = R #Ohms       #done
+        self.Current = i #Amps          #done         # parameters are defined in this file
+        self.V = self.DeltaV() #Volts   #done
+        self.Name = name                #done
         #endregion
     #endregion
 

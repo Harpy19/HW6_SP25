@@ -10,8 +10,8 @@ class Loop():
         :param Pipes: a list/array of pipes in this loop
         '''
         #region attributes
-        self.name=Name
-        self.pipes=Pipes
+        self.name = Name
+        self.pipes = Pipes
         #endregion
     #endregion
 

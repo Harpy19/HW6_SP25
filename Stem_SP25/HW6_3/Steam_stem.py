@@ -46,8 +46,9 @@ class steam():
         #3. find all unknown thermodynamic properties by interpolation from appropriate steam table
 
         #read in the thermodynamic data from files
-        ts, ps, hfs, hgs, sfs, sgs, vfs, vgs= #$JES MISSING CODE HERE$# #use np.loadtxt to read the saturated properties
-        tcol, hcol, scol, pcol = #$JES MISSING CODE HERE$# #use np.loadtxt to read the superheated properties
+        ts, ps, hfs, hgs, sfs, sgs, vfs, vgs= np.loadtxt('sat_water_table.txt', skiprows=1, unpack=True)  #use np.loadtxt to read the saturated properties  # done
+
+        tcol, hcol, scol, pcol = np.loadtxt('superheated_water_table.txt',skiprows=1, unpack=True)   #use np.loadtxt to read the superheated properties  # done
 
         R=8.314/(18/1000) #ideal gas constant for water [J/(mol K)]/[kg/mol]
         Pbar=self.p/100 #pressure in bar - 1bar=100kPa roughly
@@ -68,17 +69,34 @@ class steam():
         if self.T is not None:
             if self.T>Tsat: #interpolate with griddata
                 self.region='Superheated'
-                self.h = #$JES MISSING CODE HERE$  #use griddata to interpolate with T & P the superheated table
-                self.s = #$JES MISSING CODE HERE$  #use griddata to interpolate with T & P the superheated table
-                self.x=1.0
+                points = np.column_stack((tcol, pcol))
+                self.h = float(griddata(points, hcol,(self.T, self.p)))  #use griddata to interpolate with T & P the superheated table  # done
+                self.s = float(griddata(points, scol, (self.T, self.p))) #use griddata to interpolate with T & P the superheated table  # done
+                self.x = 1.0
                 TK = self.T + 273.14  # temperature conversion to Kelvin
                 self.v=R*TK/(self.p*1000)  #ideal gas approximation for volume
-        elif self.x!=None: #manual interpolation
+                """
+                I kept getting a negative and large value for the efficiency and turbine work
+                so I changed the 'elif' statement below to try and fix that problem.
+                I figured out after I had changed this that I had put the wrong variable in two  
+                equations and that was the cause of the incorrect values.
+                """
+        #elif self.x!=None: #manual interpolation
+            else:
+                self.region='Saturated'
+                self.T=Tsat
+                if self.x is None:
+                    self.x = 1.0
+                self.h=hf+self.x*(hg-hf)
+                self.s=sf+self.x*(sg-sf)
+                self.v=vf+self.x*(vg-vf)
+        elif self.x is not None:
             self.region='Saturated'
             self.T=Tsat
-            self.h=hf+self.x*(hg-hf)
-            self.s=sf+self.x*(sg-sf)
-            self.v=vf+self.x*(vg-vf)
+            self.h = hf+self.x*(hg-hf)
+            self.s = sf+self.x*(sg-sf)
+            self.v = vf+self.x*(vg-vf)
+
         elif self.h!=None:
             self.x=(self.h-hf)/(hg-hf)
             if self.x<=1.0: #manual interpolation
@@ -88,8 +106,9 @@ class steam():
                 self.v=vf+self.x*(vg-vf)
             else: #interpolate with griddata
                 self.region='Superheated'
-                self.T = #$JES MISSING CODE HERE$  #use griddata to interpolate with h & P the superheated table
-                self.s = #$JES MISSING CODE HERE$  #use griddata to interpolate with h & P the superheated table
+                points = np.column_stack((hcol, pcol))
+                self.T = float(griddata(points, tcol, (self.h, self.p)))  #use griddata to interpolate with h & P the superheated table  # done
+                self.s = float(griddata(points, scol, (self.h, self.p)))  #use griddata to interpolate with h & P the superheated table  # done
         elif self.s!=None:
             self.x=(self.s-sf)/(sg-sf)
             if self.x<=1.0: #manual interpolation
@@ -99,8 +118,9 @@ class steam():
                 self.v=vf+self.x*(vg-vf)
             else: #interpolate with griddata
                 self.region = 'Superheated'
-                self.T = #$JES MISSING CODE HERE$  #use griddata to interpolate with s & P the superheated table
-                self.h = #$JES MISSING CODE HERE$  #use griddata to interpolate with s & P the superheated table
+                points = np.column_stack((scol, pcol))
+                self.T = float(griddata(points, tcol, (self.s, self.p)))  #use griddata to interpolate with s & P the superheated table  # done
+                self.h = float(griddata(points, hcol, (self.s, self.p)))  #use griddata to interpolate with s & P the superheated table  # done
         #endregion
 
     def print(self):

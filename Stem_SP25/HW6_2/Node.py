@@ -9,9 +9,9 @@ class Node():
         :param ExtFlow: any external flow into (+) or out (-) of this node in L/s
         '''
         #region attributes
-        self.name=Name
-        self.pipes=Pipes
-        self.extFlow=ExtFlow
+        self.name = Name
+        self.pipes = Pipes
+        self.extFlow = ExtFlow
         #endregion
     #endregion
 
@@ -21,10 +21,10 @@ class Node():
         Calculates the net flow rate into this node in L/s
         # :return: the net flow rate into this node
         '''
-        Qtot=#$JES MISSING CODE$  #count the external flow first
+        Qtot = self.extFlow  #count the external flow first  # done
         for p in self.pipes:
             #retrieves the pipe flow rate (+) if into node (-) if out of node.  see class for pipe.
-            Qtot+=p.getFlowIntoNode(self.name)
+            Qtot += p.getFlowIntoNode(self.name)
         return Qtot
     #endregion
 #endregion

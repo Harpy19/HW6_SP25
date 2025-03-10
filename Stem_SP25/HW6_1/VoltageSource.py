@@ -1,7 +1,7 @@
 #region class definitions
 class VoltageSource():
     #region constructor
-    def __init__(self, V=12.0, name='ab'):
+    def __init__(self, V=12.0, name='ab'):                               # No changes made to this code
         """
         Define a voltage source in terms of self.Voltage = V, self.Name = name
         :param V: The voltage
